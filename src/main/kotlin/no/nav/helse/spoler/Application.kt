@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
+import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Duration
@@ -36,7 +37,7 @@ class Spol(
     private val timestamp: LocalDateTime
 ) {
     fun spol() {
-        KafkaConsumer<Any, Any>(consumerConfig(env, groupId)).use { consumer ->
+        KafkaConsumer(consumerConfig(env, groupId), StringDeserializer(), StringDeserializer()).use { consumer ->
             consumer.partitionsFor(topic)
                 .map { TopicPartition(topic, it.partition()) }
                 .also {
