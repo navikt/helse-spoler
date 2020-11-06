@@ -1,0 +1,73 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    team: tbd
+  name: spenn
+  namespace: tbd
+spec:
+  image: {{image}}
+  port: 8080
+  strategy:
+    type: Recreate
+  liveness:
+    initialDelay: 10
+    path: /isalive
+  readiness:
+    initialDelay: 10
+    path: /isready
+  prometheus:
+    enabled: true
+    path: /metrics
+  replicas:
+    cpuThresholdPercentage: 90
+    max: 1
+    min: 1
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1024Mi
+    requests:
+      cpu: 1000m
+      memory: 256Mi
+  vault:
+    enabled: true
+    paths:
+      - mountPath: /var/run/secrets/nais.io/vault
+        kvPath: /kv/prod/fss/spenn/tbd
+      - mountPath: /var/run/secrets/nais.io/service_user
+        kvPath: /serviceuser/data/prod/srvspenn
+  webproxy: true
+  secureLogs:
+    enabled: true
+  env:
+    - name: KAFKA_CONSUMER_GROUP_ID
+      value: spenn-1
+    - name: KAFKA_RAPID_TOPIC
+      value: helse-rapid-v1
+    - name: KAFKA_BOOTSTRAP_SERVERS
+      value: a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00148.adeo.no:8443,a01apvl00149.adeo.no:8443,a01apvl00150.adeo.no:8443
+    - name: SECURITYTOKENSERVICE_URL
+      value: https://sts.adeo.no/SecurityTokenServiceProvider/
+    - name: SIMULERING_SERVICE_URL
+      value: https://wasapp.adeo.no/cics/services/simulerFpServiceWSBinding
+    - name: DATABASE_HOST
+      value: fsspgdb.adeo.no
+    - name: DATABASE_PORT
+      value: "5432"
+    - name: DATABASE_NAME
+      value: helse-spenn-oppdrag
+    - name: VAULT_MOUNTPATH
+      value: postgresql/prod-fss/
+    - name: MQ_HOSTNAME
+      value: a01apvl063.adeo.no
+    - name: MQ_CHANNEL
+      value: P_SPENN
+    - name: MQ_PORT
+      value: "1414"
+    - name: MQ_QUEUE_MANAGER
+      value: MPLSC02
+    - name: OPPDRAG_QUEUE_SEND
+      value: QA.P231.OB04_OPPDRAG_XML
+    - name: OPPDRAG_QUEUE_MOTTAK
+      value: QA.P_SPENN.OPPDRAG_SP_XML_KVITT
