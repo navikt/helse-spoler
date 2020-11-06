@@ -1,73 +1,88 @@
-apiVersion: nais.io/v1alpha1
-kind: Application
+apiVersion: batch/v1beta1
+kind: Job
 metadata:
   labels:
     team: tbd
-  name: spenn
+  name: spoler
   namespace: tbd
 spec:
-  image: {{image}}
-  port: 8080
-  strategy:
-    type: Recreate
-  liveness:
-    initialDelay: 10
-    path: /isalive
-  readiness:
-    initialDelay: 10
-    path: /isready
-  prometheus:
-    enabled: true
-    path: /metrics
-  replicas:
-    cpuThresholdPercentage: 90
-    max: 1
-    min: 1
-  resources:
-    limits:
-      cpu: 2000m
-      memory: 1024Mi
-    requests:
-      cpu: 1000m
-      memory: 256Mi
-  vault:
-    enabled: true
-    paths:
-      - mountPath: /var/run/secrets/nais.io/vault
-        kvPath: /kv/prod/fss/spenn/tbd
-      - mountPath: /var/run/secrets/nais.io/service_user
-        kvPath: /serviceuser/data/prod/srvspenn
-  webproxy: true
-  secureLogs:
-    enabled: true
-  env:
-    - name: KAFKA_CONSUMER_GROUP_ID
-      value: spenn-1
-    - name: KAFKA_RAPID_TOPIC
-      value: helse-rapid-v1
-    - name: KAFKA_BOOTSTRAP_SERVERS
-      value: a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00148.adeo.no:8443,a01apvl00149.adeo.no:8443,a01apvl00150.adeo.no:8443
-    - name: SECURITYTOKENSERVICE_URL
-      value: https://sts.adeo.no/SecurityTokenServiceProvider/
-    - name: SIMULERING_SERVICE_URL
-      value: https://wasapp.adeo.no/cics/services/simulerFpServiceWSBinding
-    - name: DATABASE_HOST
-      value: fsspgdb.adeo.no
-    - name: DATABASE_PORT
-      value: "5432"
-    - name: DATABASE_NAME
-      value: helse-spenn-oppdrag
-    - name: VAULT_MOUNTPATH
-      value: postgresql/prod-fss/
-    - name: MQ_HOSTNAME
-      value: a01apvl063.adeo.no
-    - name: MQ_CHANNEL
-      value: P_SPENN
-    - name: MQ_PORT
-      value: "1414"
-    - name: MQ_QUEUE_MANAGER
-      value: MPLSC02
-    - name: OPPDRAG_QUEUE_SEND
-      value: QA.P231.OB04_OPPDRAG_XML
-    - name: OPPDRAG_QUEUE_MOTTAK
-      value: QA.P_SPENN.OPPDRAG_SP_XML_KVITT
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 1
+  template:
+    spec:
+      containers:
+        - name: spoler
+          image: {{image}}
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - mountPath: /var/run/secrets/nais.io/vault
+              name: vault-secrets
+              subPath: subpath/var/run/secrets/nais.io/vault
+            - mountPath: /var/run/secrets/nais.io/service_user
+              name: vault-secrets
+              subPath: subpath/var/run/secrets/nais.io/service_user
+            - mountPath: /etc/ssl/certs/java/cacerts
+              name: ca-bundle
+              subPath: ca-bundle.jks
+          env:
+            - name: VAULT_TOKEN_PATH
+              value: /var/run/secrets/nais.io/vault/vault_token
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00148.adeo.no:8443,a01apvl00149.adeo.no:8443,a01apvl00150.adeo.no:8443
+            - name: KAFKA_RAPID_TOPIC
+              value: helse-rapid-v1
+            - name: NAV_TRUSTSTORE_PATH
+              value: /etc/ssl/certs/java/cacerts
+            - name: NAV_TRUSTSTORE_PASSWORD
+              value: changeme
+      imagePullSecrets:
+        - name: gpr-credentials
+      initContainers:
+        - name: vks-init
+          image: navikt/vault-sidekick:v0.3.10-d122b16
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "1000m"
+          volumeMounts:
+            - mountPath: /var/run/secrets/nais.io/vault
+              name: vault-secrets
+              subPath: subpath/var/run/secrets/nais.io/vault
+            - mountPath: /var/run/secrets/nais.io/service_user
+              name: vault-secrets
+              subPath: subpath/var/run/secrets/nais.io/service_user
+          args:
+            - -v=10
+            - -logtostderr
+            - -vault=https://vault.adeo.no
+            - -one-shot
+            - -save-token=/var/run/secrets/nais.io/vault/vault_token
+            - -cn=secret:serviceuser/data/prod/srvspoler:dir=/var/run/secrets/nais.io/service_user,fmt=flatten,retries=1
+          env:
+            - name: VAULT_AUTH_METHOD
+              value: kubernetes
+            - name: VAULT_SIDEKICK_ROLE
+              value: spoler
+            - name: VAULT_K8S_LOGIN_PATH
+              value: auth/kubernetes/prod/fss/login
+      serviceAccount: podcreator
+      serviceAccountName: podcreator
+      volumes:
+        - name: vault-secrets
+          emptyDir:
+            medium: Memory
+        - name: ca-bundle
+          configMap:
+            defaultMode: 420
+            name: ca-bundle-jks
+      restartPolicy: Never
+
