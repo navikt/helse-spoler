@@ -32,11 +32,11 @@ private fun spol(env: Map<String, String>) {
 class Spol(
     private val env: Map<String, String>,
     private val topic: String,
-    private val clientId: String,
+    private val groupId: String,
     private val timestamp: LocalDateTime
 ) {
     fun spol() {
-        KafkaConsumer<Any, Any>(consumerConfig(env, clientId)).use { consumer ->
+        KafkaConsumer<Any, Any>(consumerConfig(env, groupId)).use { consumer ->
             consumer.partitionsFor(topic)
                 .map { TopicPartition(topic, it.partition()) }
                 .also {
@@ -48,7 +48,7 @@ class Spol(
                 .map { it to timestamp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() }.toMap()
                 .let { consumer.offsetsForTimes(it) }
                 .mapValues { (_, offsetAndTimestamp) -> offsetAndTimestamp.offset() }
-                .onEach { (topicPartition, offset) -> log.info("For clientId $clientId, setter offset for partisjon $topicPartition til $offset") }
+                .onEach { (topicPartition, offset) -> log.info("For groupId $groupId, setter offset for partisjon $topicPartition til $offset") }
                 .forEach { (topicPartition, offset) -> consumer.seek(topicPartition, offset) }
 
             consumer.commitSync()
@@ -56,10 +56,10 @@ class Spol(
     }
 }
 
-internal fun consumerConfig(env: Map<String, String>, clientId: String) = Properties().apply {
+internal fun consumerConfig(env: Map<String, String>, groupId: String) = Properties().apply {
     putAll(kafkaBaseConfig(env))
-    put(ConsumerConfig.GROUP_ID_CONFIG, env.getValue("KAFKA_CONSUMER_GROUP_ID"))
-    clientId.also { put(ConsumerConfig.CLIENT_ID_CONFIG, "consumer-$it") }
+    put(ConsumerConfig.GROUP_ID_CONFIG, groupId)
+    put(ConsumerConfig.CLIENT_ID_CONFIG, "consumer-spoler")
     put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false")
 }
 
