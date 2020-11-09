@@ -51,8 +51,21 @@ jobs:
           args: --project-name=spoler --org=tbd-ty7 --fail-on=all
           command: monitor
 
-  deployDev:
-    name: deploy to dev
+#  deployDev:
+#    name: deploy to dev
+#    needs: [set_version, build, snyk]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v1
+#      - uses: nais/deploy/actions/deploy@v1
+#        env:
+#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+#          CLUSTER: dev-fss
+#          RESOURCE: deploy/dev.yml
+#          IMAGE: ${{ needs.set_version.outputs.image }}
+
+  deployProd:
+    name: deploy to prod
     needs: [set_version, build, snyk]
     runs-on: ubuntu-latest
     steps:
@@ -60,19 +73,6 @@ jobs:
       - uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
-          RESOURCE: deploy/dev.yml
+          CLUSTER: prod-fss
+          RESOURCE: deploy/prod.yml
           IMAGE: ${{ needs.set_version.outputs.image }}
-#
-#  deployProd:
-#    name: deploy to prod
-#    needs: [set_version, deployDev]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v1
-#      - uses: nais/deploy/actions/deploy@v1
-#        env:
-#          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-#          CLUSTER: prod-fss
-#          RESOURCE: deploy/prod.yml
-#          IMAGE: ${{ needs.set_version.outputs.image }}
