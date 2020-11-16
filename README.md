@@ -6,7 +6,7 @@ Spoler tilbake kafka offset. Kjører som en Job i Kubernetes ved deploy.
 
 ## How-to
 1. Slett deployment for apper som skal spoles tilbake
-1. Oppdater liste over apper som skal spoles tilbake [her](https://github.com/navikt/helse-spoler/blob/master/src/main/kotlin/no/nav/helse/spoler/Application.kt#L27)
+1. Oppdater liste over apper som skal spoles tilbake (fjern de som evt ligger der fra sist kjøring) [her](https://github.com/navikt/helse-spoler/blob/master/src/main/kotlin/no/nav/helse/spoler/Application.kt#L27)
 1. Kommenter inn deployment steps i Github actions
 1. Commit og push
 1. Kommenter ut deployment steps i Github actions
