@@ -25,7 +25,8 @@ private fun spol(env: Map<String, String>) {
     Thread.setDefaultUncaughtExceptionHandler { _, throwable -> log.error(throwable.message, throwable) }
 
     listOf(
-        Spol(env, "helse-rapid-v1", "spre-stonadsstatistikk-v2", LocalDateTime.of(2021, 2, 1, 20, 9)),
+        Spol(env, "privat-sykepenger-inntektsmelding", "spedisjon-v1", LocalDateTime.of(2021, 3, 10, 3, 0)),
+        Spol(env, "syfo-soknad-v2", "spedisjon-v1", LocalDateTime.of(2021, 3, 10, 3, 0)),
     ).forEach(Spol::spol)
 }
 
