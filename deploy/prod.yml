@@ -83,18 +83,18 @@ spec:
             medium: Memory
         - name: kafka-credentials
           secret:
-              defaultMode: 420
-              items:
-                  - key: KAFKA_CERTIFICATE
-                    path: kafka.crt
-                  - key: KAFKA_PRIVATE_KEY
-                    path: kafka.key
-                  - key: KAFKA_CA
-                    path: ca.crt
-                  - key: client.keystore.p12
-                    path: client.keystore.p12
-                  - key: client.truststore.jks
-                    path: client.truststore.jks
-              secretName: kafka-spoler-nav-prod-f1b67b77
+            defaultMode: 420
+            items:
+              - key: KAFKA_CERTIFICATE
+                path: kafka.crt
+              - key: KAFKA_PRIVATE_KEY
+                path: kafka.key
+              - key: KAFKA_CA
+                path: ca.crt
+              - key: client.keystore.p12
+                path: client.keystore.p12
+              - key: client.truststore.jks
+                path: client.truststore.jks
+            secretName: kafka-spoler-nav-prod-f1b67b77
       restartPolicy: Never
 
