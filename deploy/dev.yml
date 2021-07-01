@@ -33,19 +33,19 @@ spec:
             - name: KAFKA_RAPID_TOPIC  #kan denne fjernes ettersom vi setter topic i hvert case?
               value: tbd.rapid.v1
             - name: KAFKA_BROKERS
-                valueFrom:
+              valueFrom:
                 secretKeyRef:
-                key: KAFKA_BROKERS
-                name: kafka-spoler-nav-dev-manuelt-opprettet
-            -   name: KAFKA_CREDSTORE_PASSWORD
-                valueFrom:
-                  secretKeyRef:
+                  key: KAFKA_BROKERS
+                  name: kafka-spoler-nav-dev-manuelt-opprettet
+            - name: KAFKA_CREDSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
                   key: KAFKA_CREDSTORE_PASSWORD
                   name: kafka-spoler-nav-dev-manuelt-opprettet
-            -   name: KAFKA_KEYSTORE_PATH
-                value: /var/run/secrets/nais.io/kafka/client.keystore.p12
-            -   name: KAFKA_TRUSTSTORE_PATH
-                value: /var/run/secrets/nais.io/kafka/client.truststore.jks
+            - name: KAFKA_KEYSTORE_PATH
+              value: /var/run/secrets/nais.io/kafka/client.keystore.p12
+            - name: KAFKA_TRUSTSTORE_PATH
+              value: /var/run/secrets/nais.io/kafka/client.truststore.jks
       imagePullSecrets:
         - name: gpr-credentials
       initContainers:
