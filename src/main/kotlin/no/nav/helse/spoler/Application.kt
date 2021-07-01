@@ -63,26 +63,19 @@ internal fun consumerConfig(env: Map<String, String>, groupId: String) = Propert
 }
 
 private fun kafkaBaseConfig(env: Map<String, String>) = Properties().apply {
-    val username = "/var/run/secrets/nais.io/service_user/username".readFile()
-    val password = "/var/run/secrets/nais.io/service_user/password".readFile()
-    val truststore = env["NAV_TRUSTSTORE_PATH"]
-    val truststorePassword = env["NAV_TRUSTSTORE_PASSWORD"]
+    val truststore = env.getValue("KAFKA_TRUSTSTORE_PATH")
+    val truststorePassword = env.getValue("KAFKA_CREDSTORE_PASSWORD")
+    val bootstrapServers = env.getValue("KAFKA_BROKERS")
+    val keystoreLocation = env.getValue("KAFKA_KEYSTORE_PATH")
+    val keystorePassword = env.getValue("KAFKA_CREDSTORE_PASSWORD")
 
-    put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, env.getValue("KAFKA_BOOTSTRAP_SERVERS"))
-    put(SaslConfigs.SASL_MECHANISM, "PLAIN")
-    put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT")
-
-    put(
-        SaslConfigs.SASL_JAAS_CONFIG,
-        "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$username\" password=\"$password\";"
-    )
-
-    if (truststore != null) {
-        put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL")
-        put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(truststore).absolutePath)
-        put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, truststorePassword)
-
-    }
+    put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
+    put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL")
+    put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "")
+    put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(truststore).absolutePath)
+    put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, truststorePassword)
+    put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, keystoreLocation)
+    put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, keystorePassword)
 }
 
 private fun String.readFile() = File(this).readText(Charsets.UTF_8)

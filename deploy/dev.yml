@@ -21,26 +21,31 @@ spec:
               memory: 512Mi
               cpu: 500m
           volumeMounts:
-            - mountPath: /var/run/secrets/nais.io/vault
+            - mountPath: /var/run/secrets/nais.io/vault #kan denne fjernes ettersom vi ikke har database?
               name: vault-secrets
               subPath: subpath/var/run/secrets/nais.io/vault
-            - mountPath: /var/run/secrets/nais.io/service_user
-              name: vault-secrets
-              subPath: subpath/var/run/secrets/nais.io/service_user
-            - mountPath: /etc/ssl/certs/java/cacerts
-              name: ca-bundle
-              subPath: ca-bundle.jks
+            - mountPath: /var/run/secrets/nais.io/kafka
+              name: kafka-credentials
+              readOnly: true
           env:
             - name: VAULT_TOKEN_PATH
               value: /var/run/secrets/nais.io/vault/vault_token
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443
-            - name: KAFKA_RAPID_TOPIC
-              value: helse-rapid-v1
-            - name: NAV_TRUSTSTORE_PATH
-              value: /etc/ssl/certs/java/cacerts
-            - name: NAV_TRUSTSTORE_PASSWORD
-              value: changeme
+            - name: KAFKA_RAPID_TOPIC  #kan denne fjernes ettersom vi setter topic i hvert case?
+              value: tbd.rapid.v1
+            - name: KAFKA_BROKERS
+                valueFrom:
+                secretKeyRef:
+                key: KAFKA_BROKERS
+                name: kafka-spoler-nav-dev-manuelt-opprettet
+            -   name: KAFKA_CREDSTORE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                  key: KAFKA_CREDSTORE_PASSWORD
+                  name: kafka-spoler-nav-dev-manuelt-opprettet
+            -   name: KAFKA_KEYSTORE_PATH
+                value: /var/run/secrets/nais.io/kafka/client.keystore.p12
+            -   name: KAFKA_TRUSTSTORE_PATH
+                value: /var/run/secrets/nais.io/kafka/client.truststore.jks
       imagePullSecrets:
         - name: gpr-credentials
       initContainers:
@@ -54,21 +59,17 @@ spec:
               memory: "128Mi"
               cpu: "1000m"
           volumeMounts:
-            - mountPath: /var/run/secrets/nais.io/vault
+            - mountPath: /var/run/secrets/nais.io/vault #kan denne fjernes ettersom vi ikke har database?
               name: vault-secrets
               subPath: subpath/var/run/secrets/nais.io/vault
-            - mountPath: /var/run/secrets/nais.io/service_user
-              name: vault-secrets
-              subPath: subpath/var/run/secrets/nais.io/service_user
           args:
             - -v=10
             - -logtostderr
-            - -vault=https://vault.adeo.no
+            - -vault=https://vault.adeo.no #kan denne fjernes ettersom vi ikke har database?
             - -one-shot
-            - -save-token=/var/run/secrets/nais.io/vault/vault_token
-            - -cn=secret:serviceuser/data/dev/srvspoler:dir=/var/run/secrets/nais.io/service_user,fmt=flatten,retries=1
+            - -save-token=/var/run/secrets/nais.io/vault/vault_token #kan vault fjernes ettersom vi ikke har database?
           env:
-            - name: VAULT_AUTH_METHOD
+            - name: VAULT_AUTH_METHOD #kan vault fjernes ettersom vi ikke har database?
               value: kubernetes
             - name: VAULT_SIDEKICK_ROLE
               value: spoler
@@ -80,9 +81,20 @@ spec:
         - name: vault-secrets
           emptyDir:
             medium: Memory
-        - name: ca-bundle
-          configMap:
-            defaultMode: 420
-            name: ca-bundle-jks
+        - name: kafka-credentials
+              secret:
+                  defaultMode: 420
+                  items:
+                      - key: KAFKA_CERTIFICATE
+                        path: kafka.crt
+                      - key: KAFKA_PRIVATE_KEY
+                        path: kafka.key
+                      - key: KAFKA_CA
+                        path: ca.crt
+                      - key: client.keystore.p12
+                        path: client.keystore.p12
+                      - key: client.truststore.jks
+                        path: client.truststore.jks
+                  secretName: kafka-spoler-nav-dev-manuelt-opprettet
       restartPolicy: Never
 
