@@ -95,6 +95,6 @@ spec:
                 path: client.keystore.p12
               - key: client.truststore.jks
                 path: client.truststore.jks
-          secretName: kafka-spoler-nav-dev-manuelt-opprettet
+            secretName: kafka-spoler-nav-dev-manuelt-opprettet
       restartPolicy: Never
 
