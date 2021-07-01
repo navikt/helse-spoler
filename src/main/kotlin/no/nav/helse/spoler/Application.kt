@@ -17,6 +17,7 @@ import java.util.*
 private val log = LoggerFactory.getLogger("no.nav.helse.Spoler")
 
 fun main() {
+    log.info("Starter spoler")
     val env = System.getenv()
     spol(env)
 }
@@ -35,6 +36,7 @@ class Spol(
     private val timestamp: LocalDateTime
 ) {
     fun spol() {
+        log.info("Spoler $topic for $groupId til $timestamp")
         KafkaConsumer(consumerConfig(env, groupId), StringDeserializer(), StringDeserializer()).use { consumer ->
             consumer.partitionsFor(topic)
                 .map { TopicPartition(topic, it.partition()) }
