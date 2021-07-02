@@ -36,12 +36,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: KAFKA_BROKERS
-                  name: kafka-spoler-nav-prod-f1b67b77
+                  name: kafka-spoler-nav-prod-manuelt-opprettet
             - name: KAFKA_CREDSTORE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: KAFKA_CREDSTORE_PASSWORD
-                  name: kafka-spoler-nav-prod-f1b67b77
+                  name: kafka-spoler-nav-prod-manuelt-opprettet
             - name: KAFKA_KEYSTORE_PATH
               value: /var/run/secrets/nais.io/kafka/client.keystore.p12
             - name: KAFKA_TRUSTSTORE_PATH
@@ -95,6 +95,6 @@ spec:
                 path: client.keystore.p12
               - key: client.truststore.jks
                 path: client.truststore.jks
-            secretName: kafka-spoler-nav-prod-f1b67b77
+            secretName: kafka-spoler-nav-prod-manuelt-opprettet # Laget med oppskrift fra https://doc.nais.io/addons/kafka/#accessing-topics-from-an-application-on-legacy-infrastructure
       restartPolicy: Never
 
