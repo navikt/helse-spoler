@@ -9,6 +9,9 @@ spec:
   ttlSecondsAfterFinished: 300
   backoffLimit: 1
   template:
+    metadata:
+      labels:
+        team: tbd
     spec:
       containers:
         - name: spoler
