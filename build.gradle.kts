@@ -1,7 +1,7 @@
-val junitJupiterVersion = "5.7.0"
+val junitJupiterVersion = "5.8.1"
 
 plugins {
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.5.31"
 }
 
 buildscript {
@@ -20,11 +20,11 @@ repositories {
 }
 
 dependencies {
-    implementation("org.apache.kafka:kafka-clients:2.6.0")
-    implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation("net.logstash.logback:logstash-logback-encoder:6.4")
+    implementation("org.apache.kafka:kafka-clients:2.8.0")
+    implementation("ch.qos.logback:logback-classic:1.2.6")
+    implementation("net.logstash.logback:logstash-logback-encoder:6.6")
 
-    testImplementation("io.mockk:mockk:1.10.2")
+    testImplementation("io.mockk:mockk:1.12.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
@@ -33,10 +33,10 @@ dependencies {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "14"
+        kotlinOptions.jvmTarget = "16"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "14"
+        kotlinOptions.jvmTarget = "16"
     }
 
     named<Jar>("jar") {
@@ -66,6 +66,6 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "6.7"
+        gradleVersion = "7.2"
     }
 }
