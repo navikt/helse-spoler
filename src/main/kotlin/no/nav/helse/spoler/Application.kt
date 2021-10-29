@@ -1,18 +1,17 @@
 package no.nav.helse.spoler
 
-import org.apache.kafka.clients.CommonClientConfigs
-import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.clients.consumer.KafkaConsumer
-import org.apache.kafka.common.TopicPartition
-import org.apache.kafka.common.config.SaslConfigs
-import org.apache.kafka.common.config.SslConfigs
-import org.apache.kafka.common.serialization.StringDeserializer
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
+import org.apache.kafka.clients.CommonClientConfigs
+import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.common.TopicPartition
+import org.apache.kafka.common.config.SslConfigs
+import org.apache.kafka.common.serialization.StringDeserializer
+import org.slf4j.LoggerFactory
 
 private val log = LoggerFactory.getLogger("no.nav.helse.Spoler")
 
@@ -24,8 +23,8 @@ fun main() {
 
 private fun spol(env: Map<String, String>) {
     Thread.setDefaultUncaughtExceptionHandler { _, throwable -> log.error(throwable.message, throwable) }
-    listOf<Spol>(
-        Spol(env, "tbd.rapid.v1", "tbd-sporbar-v1", LocalDateTime.of(2021, 10, 28, 14, 0, 0))
+    listOf(
+        Spol(env, "tbd.rapid.v1", "tbd-sporbar-v1", LocalDateTime.of(2021, 10, 29, 12, 0, 0))
     ).forEach(Spol::spol)
 }
 
