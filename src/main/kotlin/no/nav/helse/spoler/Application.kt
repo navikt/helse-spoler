@@ -32,7 +32,7 @@ class Spol(
     private val env: Map<String, String>,
     private val topic: String,
     private val groupId: String,
-    private val timestamp: LocalDateTime
+    private val timestamp: LocalDateTime,
 ) {
     fun spol() {
         log.info("Spoler $topic for $groupId til $timestamp")
@@ -44,8 +44,7 @@ class Spol(
                     while (consumer.poll(Duration.ofSeconds(1)).count() == 0) {
                         log.debug("Poll count == 0")
                     }
-                }
-                .map { it to timestamp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() }.toMap()
+                }.associateWith { timestamp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() }
                 .let { consumer.offsetsForTimes(it) }
                 .mapValues { (_, offsetAndTimestamp) -> offsetAndTimestamp.offset() }
                 .onEach { (topicPartition, offset) -> log.info("For groupId $groupId, setter offset for partisjon $topicPartition til $offset") }
@@ -78,6 +77,4 @@ private fun kafkaBaseConfig(env: Map<String, String>) = Properties().apply {
     put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, keystoreLocation)
     put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, keystorePassword)
 }
-
-private fun String.readFile() = File(this).readText(Charsets.UTF_8)
 
