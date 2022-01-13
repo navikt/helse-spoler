@@ -24,7 +24,12 @@ fun main() {
 private fun spol(env: Map<String, String>) {
     Thread.setDefaultUncaughtExceptionHandler { _, throwable -> log.error(throwable.message, throwable) }
     val apperSomSkalSpoleres: List<Spol> = listOf(
-
+        Spol(
+            env,
+            "tbd.rapid.v1",
+            "tbd-spangre-utsettelser-v1",
+            LocalDateTime.of(2021, 10, 18, 12, 0, 0)
+        )
     )
     apperSomSkalSpoleres.forEach(Spol::spol)
 }
