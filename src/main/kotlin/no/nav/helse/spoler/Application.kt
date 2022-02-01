@@ -27,8 +27,8 @@ private fun spol(env: Map<String, String>) {
         Spol(
             env,
             "tbd.rapid.v1",
-            "tbd-spangre-utsettelser-v1",
-            LocalDateTime.of(2021, 10, 18, 12, 0, 0)
+            "tbd-spre-gosys-v1",
+            LocalDateTime.of(2021, 1, 12, 15, 29, 27)
         )
     )
     apperSomSkalSpoleres.forEach(Spol::spol)
