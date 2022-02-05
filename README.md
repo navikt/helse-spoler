@@ -1,6 +1,12 @@
 # Spoler
 ![Bygg og deploy](https://github.com/navikt/helse-spoler/workflows/Bygg%20og%20deploy/badge.svg)
 
+## DEPRECATED
+
+All kafka-ops kan nå gjøres fra laptop via mer egnet prosjekt:
+
+https://github.com/navikt/helse-spytte
+
 ## Beskrivelse
 Spoler tilbake kafka offset. Kjører som en Job i Kubernetes ved deploy.
 
