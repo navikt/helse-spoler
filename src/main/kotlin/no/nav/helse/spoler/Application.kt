@@ -26,9 +26,9 @@ private fun spol(env: Map<String, String>) {
     val apperSomSkalSpoleres: List<Spol> = listOf(
         Spol(
             env,
-            "tbd.rapid.v1",
-            "tbd-spre-gosys-v1",
-            LocalDateTime.of(2021, 1, 12, 15, 29, 27)
+            "aapen-oppgave-endret-v1-prod",
+            "oppgave-endret-sniffer",
+            LocalDateTime.of(2011, 1, 12, 15, 29, 27)
         )
     )
     apperSomSkalSpoleres.forEach(Spol::spol)
