@@ -67,6 +67,7 @@ jobs:
           IMAGE: ${{ needs.set_version.outputs.image }}
 
   deployProd:
+    if: "false"
     name: deploy to prod
     needs: [set_version, build, snyk]
     runs-on: ubuntu-latest
